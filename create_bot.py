@@ -27,9 +27,10 @@ class Form(StatesGroup):
 class Projects(StatesGroup):
     project_name = State()
     project_main_account = State()
+    main_client = State()
     short_task_description = State()
     deadline = State()
-    deadline_time = State()
+    # deadline_time = State()
     score_importance = State()
     score_urgency = State()
     timestamp = State()

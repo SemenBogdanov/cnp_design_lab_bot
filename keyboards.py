@@ -17,6 +17,7 @@ def rate_urgency():
         InlineKeyboardButton('5', callback_data=call_urgency.new(num3='5')),
     )
 
+
 def get_keyboard():
     return InlineKeyboardMarkup().row(
         KeyboardButton('Пора ли звонить?', callback_data=call_data1.new(num1='1')),

@@ -1,4 +1,5 @@
 import gspread
+import logging
 
 
 def rec_to_sheets(data):
@@ -27,10 +28,13 @@ def check_user(u_id: str):
     sh = sa.open("Design_lab_orders")
     wsh = sh.worksheet('Users')
     #     get A col values
+
     cnt_A = wsh.col_values(1)
+
     name_from_sheet = ""
     for i in cnt_A:
-        if i == u_id:
+        # logging.info(i)
+        if str(i) == str(u_id):
             name_from_sheet = wsh.row_values(cnt_A.index(i)+1)[1]
     print(f'name_from_sheet is {name_from_sheet}')
     return name_from_sheet
