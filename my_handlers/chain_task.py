@@ -2,11 +2,14 @@ import logging
 from datetime import datetime
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
+from aiogram.types import ReplyKeyboardRemove
+from aiogram.utils.callback_data import CallbackData
+
 from create_bot import Dispatcher, bot, Projects
 from aiogram import types
 from help import msg
 
-from keyboards import rate_urgency
+import keyboards
 from my_handlers.api_google import rec_to_sheets, check_user
 from my_handlers.chain_welcome import cmd_start
 
@@ -90,24 +93,46 @@ async def get_deadline_date(message: types.Message, state: FSMContext):
         data['deadline_date'] = message.text
     await Projects.next()
     await bot.send_message(message.chat.id, "Как вы оцениваете важность проекта по шкале от 1 до 5 "
-                                            "(где 1 - совсем неважно, 5 - крайне важно)", parse_mode='HTML')
+                                            "(где 1 - совсем неважно, 5 - крайне важно)", parse_mode='HTML',
+                           reply_markup=keyboards.importance())
 
 
-async def get_score_importance(message: types.Message, state: FSMContext):
+async def get_score_importance(query: types.CallbackQuery, callback_data, state: FSMContext):
+    message = query.message
+    await query.answer(f"Выбрано значение: {callback_data['imp']}")
+    await query.message.delete_reply_markup()
     async with state.proxy() as data:
-        data['score_importance'] = message.text
+        data['score_importance'] = callback_data['imp']
     await Projects.next()
+
+    # logging.info(data)
+    # logging.info(message.message_id)
     await bot.send_message(message.chat.id, "Как вы оцениваете срочность проекта по шкале от 1 до 5 "
-                                            "(где 1 - совсем несрочно, 5 - крайне срочно)", parse_mode='HTML')
+                                            "(где 1 - совсем несрочно, 5 - крайне срочно)", parse_mode='HTML',
+                           reply_markup=keyboards.urgency())
 
 
-async def get_score_urgency(message: types.Message, state: FSMContext):
+async def callback_ret(query: types.CallbackQuery, callback_data, state: FSMContext):
+    # logging.info(state)
     async with state.proxy() as data:
-        data['score_urgency'] = message.text
+        data['score_urgency'] = callback_data['urgency']
         data['timestamp'] = str(datetime.now())
         data['task_status'] = 'New!'
-    await state.finish()
+    await query.answer(f"Выбрано значение {callback_data['urgency']}")
+    await query.message.delete_reply_markup()
 
+    message = query.message
+    # logging.info(query)
+    # logging.info(message.message_id)
+    # await bot.edit_message_reply_markup(message.chat.id, message_id=int(message.message_id)-1)
+
+    # await Projects.next()
+    # async with state.proxy() as data:
+
+    # # logging.info("Hello!")
+    # logging.info(callback_data['val'])
+    # logging.info(data['score_urgency'])
+    await state.finish()
     ans = f"Внимание кухня! Новый заказ от {data['user_from']}:\n" \
           + "Проект: " + data['project_name'] + "\n" \
           + "Главный проекта: " + data['project_main_account'] + "\n" \
@@ -118,17 +143,19 @@ async def get_score_urgency(message: types.Message, state: FSMContext):
           + "Срочность: " + data['score_urgency'] + "\n" \
           + "Дата создания: " + data['timestamp'] + "\n" \
           + "Статус задачи: " + data['task_status'] + "\n"
-    await message.bot.send_message('-774044272', ans)
-
-    try:
-        # insert info into sheet
-        if rec_to_sheets(data):
-            await bot.send_message(message.chat.id, "Спасибо, ваш запрос отправлен в дизайн-лабораторию! "
-                                                    "С вами скоро свяжутся)", parse_mode='HTML')
-
-    except Exception as e:
-        await bot.send_message(message.chat.id, "Произошел какой-то сбой. Данные, к сожалению, не записались :(")
-        await bot.send_message('287994530', str(e) + '\nДанные для записи:\n' + str(data))
+    # logging.info(ans)
+    # await bot.send_message(message.chat.id, ans) #for test
+    await query.bot.send_message('-774044272', ans)
+    #
+    # try:
+    #     # insert info into sheet
+    #     if rec_to_sheets(data):
+    #         await bot.send_message(message.chat.id, "Спасибо, ваш запрос отправлен в дизайн-лабораторию! "
+    #                                                 "С вами скоро свяжутся)", parse_mode='HTML')
+    #
+    # except Exception as e:
+    #     await bot.send_message(message.chat.id, "Произошел какой-то сбой. Данные, к сожалению, не записались :(")
+    #     await bot.send_message('287994530', str(e) + '\nДанные для записи:\n' + str(data))
 
 
 # register handlers
@@ -143,9 +170,15 @@ def register_chains(dp: Dispatcher):
     dp.register_message_handler(get_task_description, state=Projects.short_task_description)
     dp.register_message_handler(get_deadline_date, state=Projects.deadline)
     # dp.register_message_handler(get_deadline_time, state=Projects.deadline_time)
-    dp.register_message_handler(get_score_importance, state=Projects.score_importance)
-    dp.register_message_handler(get_score_urgency, state=Projects.score_urgency)
+    # dp.register_message_handler(get_score_importance, state=Projects.score_importance)
+    # dp.register_message_handler(get_score_urgency, state=Projects.score_urgency)
     dp.register_message_handler(get_chat_id, text=['чатид'])
     # Cancel
     dp.register_message_handler(cancel_new_task, state='*', commands='cancel')
     dp.register_message_handler(cancel_new_task, Text(equals='cancel', ignore_case=True), state='*')
+
+    dp.register_callback_query_handler(callback_ret, keyboards.call_urgency.filter(urgency=['1', '2', '3', '4', '5']),
+                                       state='*')
+    dp.register_callback_query_handler(get_score_importance,
+                                       keyboards.call_importance.filter(imp=['1', '2', '3', '4', '5']),
+                                       state=Projects.score_importance)
