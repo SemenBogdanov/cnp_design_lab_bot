@@ -146,16 +146,16 @@ async def callback_ret(query: types.CallbackQuery, callback_data, state: FSMCont
     # logging.info(ans)
     # await bot.send_message(message.chat.id, ans) #for test
     await query.bot.send_message('-774044272', ans)
-    #
-    # try:
-    #     # insert info into sheet
-    #     if rec_to_sheets(data):
-    #         await bot.send_message(message.chat.id, "Спасибо, ваш запрос отправлен в дизайн-лабораторию! "
-    #                                                 "С вами скоро свяжутся)", parse_mode='HTML')
-    #
-    # except Exception as e:
-    #     await bot.send_message(message.chat.id, "Произошел какой-то сбой. Данные, к сожалению, не записались :(")
-    #     await bot.send_message('287994530', str(e) + '\nДанные для записи:\n' + str(data))
+
+    try:
+        # insert info into sheet
+        if rec_to_sheets(data):
+            await bot.send_message(message.chat.id, "Спасибо, ваш запрос отправлен в дизайн-лабораторию! "
+                                                    "С вами скоро свяжутся)", parse_mode='HTML')
+
+    except Exception as e:
+        await bot.send_message(message.chat.id, "Произошел какой-то сбой. Данные, к сожалению, не записались :(")
+        await bot.send_message('287994530', str(e) + '\nДанные для записи:\n' + str(data))
 
 
 # register handlers
