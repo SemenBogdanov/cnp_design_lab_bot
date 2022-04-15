@@ -6,6 +6,7 @@ from aiogram.utils.callback_data import CallbackData
 call_urgency = CallbackData('urgency', 'urgency')
 call_importance = CallbackData('imp', 'imp')
 
+
 def urgency():
     keyboard = types.InlineKeyboardMarkup(one_time_keyboard=True)
     keyboard.row(

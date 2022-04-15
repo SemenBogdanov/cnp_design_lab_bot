@@ -6,9 +6,13 @@ def rec_to_sheets(data):
     fsa = "service_account.json"
     sa = gspread.service_account(fsa)
     sh = sa.open("Design_lab_orders")
-
     wsh = sh.worksheet('Data')
-    wsh.append_row(list(data.values()))
+    id_val = wsh.acell('K2').value
+    logging.info(id_val)
+    wsh.insert_row(list(data.values()), index=2)
+    wsh.update('K2', int(id_val) + 1)
+    # wsh.append_row(list(data.values()),table_range="A1")
+    # wsh.append_row(list(data.values()))
     return True
 
 
