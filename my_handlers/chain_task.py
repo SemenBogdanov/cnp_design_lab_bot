@@ -147,7 +147,7 @@ async def get_score_importance(query: types.CallbackQuery, callback_data, state:
           + "Создано: <b>" + ddate + "</b>\n"
     # logging.info(ans)
     # await bot.send_message(message.chat.id, ans) #for test
-    await query.bot.send_message('-774044272', ans, parse_mode='HTML')
+    await query.bot.send_message('-1001613271219', ans, parse_mode='HTML')
 
     try:
         # insert info into sheet
