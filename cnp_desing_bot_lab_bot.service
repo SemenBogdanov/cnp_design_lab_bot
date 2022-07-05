@@ -6,9 +6,9 @@ After=network.target
 [Service]
 Type=simple
 User=semen106
-WorkingDirectory=/home/semen106/bot/cnp_design_lab_bot
-ExecStart=/usr/bin/python3 /home/semen106/bot/cnp_design_lab_bot/main.py
-RestartSec=20
+WorkingDirectory=/home/semen106/bot/desing_bot/cnp_design_lab_bot
+ExecStart=/usr/bin/python3 /home/semen106/bot/desing_bot/cnp_design_lab_bot/main.py
+RestartSec=30
 Restart=always
 
 [Install]
