@@ -11,7 +11,7 @@ API_TOKEN = token
 
 # Подключаем соответствующую конфигурацию логгирования документа
 logging.basicConfig(level=logging.INFO)
-
+#
 # Создаем экземпляры классов Bot и Dispatcher, которые мы заранее ипортировали
 # из библиотеки aiogram на строке 2
 bot = Bot(token=API_TOKEN)

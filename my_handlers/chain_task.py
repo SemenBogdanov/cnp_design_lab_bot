@@ -4,6 +4,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.types import ReplyKeyboardRemove
 from aiogram.utils.callback_data import CallbackData
+from my_handlers.api_google import create_new_bitrix_task
 
 from create_bot import Dispatcher, bot, Projects
 from aiogram import types
@@ -86,7 +87,8 @@ async def get_task_description(message: types.Message, state: FSMContext):
         data['short_task_description'] = message.text
     await Projects.next()
     await bot.send_message(message.chat.id, "Установите дату и время "
-                                            "сдачи в формате <b>'ДД.ММ.ГГГГ ЧЧ-ММ'</b>, например", parse_mode='HTML')
+                                            "сдачи в формате <b>'ДД.ММ.ГГГГ ЧЧ:ММ'</b>, например"
+                                            " 25.11.2022 18:00", parse_mode='HTML')
 
 
 async def get_deadline_date(message: types.Message, state: FSMContext):
@@ -96,6 +98,44 @@ async def get_deadline_date(message: types.Message, state: FSMContext):
     await bot.send_message(message.chat.id, "Как вы оцениваете важность проекта по шкале от 1 до 5 "
                                             "(где 1 - совсем неважно, 5 - крайне важно)", parse_mode='HTML',
                            reply_markup=keyboards.importance())
+
+
+async def recs(query: types.CallbackQuery, data):
+
+    try:
+        ddate = datetime.strftime(datetime.strptime(data['timestamp'][0:16], '%Y-%m-%d %H:%M'), '%d.%m.%Y %H:%M')
+    except:
+        ddate = data['timestamp']
+
+    ans = f"Новый заказ от <b>{data['user_from']}:\n</b>" \
+          + "Проект: <b>" + data['project_name'] + "</b>\n" \
+          + "Клиент: <b>" + data['main_client'] + "</b>\n" \
+          + "Дедлайн: <b>" + data['deadline_date'] + "</b>\n" \
+          + "Описание: \n<i>" + data['short_task_description'] + "</i>\n" \
+          + "Важность: <b>" + data['score_importance'] + "</b>\n" \
+          + "Создано: <b>" + ddate + "</b>\n"
+
+    # logging.info(ans)
+    # await bot.send_message(message.chat.id, ans) #for test
+    try:
+        # insert info into google sheet
+        if rec_to_sheets(data):
+            await bot.send_message(query.message.chat.id, "Спасибо, ваш запрос отправлен в дизайн-лабораторию! "
+                                                          "С вами скоро свяжутся)", parse_mode='HTML')
+            await query.bot.send_message('-1001613271219', ans, parse_mode='HTML')
+
+        bitrix_task_was_created = await create_new_bitrix_task(data['project_name'],
+                                                               ans, data['deadline_date'], 425, 377)
+        # print(bitrix_task_was_created['task']['id'])
+        if bitrix_task_was_created:
+            await query.bot.send_message('-1001613271219',
+                                         f"Создана задача в Bitrix24: {bitrix_task_was_created['task']['id']}",
+                                         parse_mode='HTML')
+        else:
+            await query.bot.send_message('-1001613271219', "Не удалось создать задачу в Bitrix24")
+    except Exception as e:
+        await bot.send_message(query.message.chat.id, "Произошел какой-то сбой. Данные, к сожалению, не записались :(")
+        await bot.send_message('287994530', str(e) + '\nДанные для записи:\n' + str(data))
 
 
 async def get_score_importance(query: types.CallbackQuery, callback_data, state: FSMContext):
@@ -112,13 +152,13 @@ async def get_score_importance(query: types.CallbackQuery, callback_data, state:
     #                                         "(где 1 - совсем несрочно, 5 - крайне срочно)", parse_mode='HTML')
 
     # async def callback_ret(query: types.CallbackQuery, state: FSMContext):
-    logging.info(state)
+    # logging.info(state)
     async with state.proxy() as data:
         data['score_urgency'] = '--исключено--'
         # data['score_importance'] = callback_data['imp']
         data['timestamp'] = str(datetime.now())
         data['task_status'] = 'New!'
-    print(data)
+    # print(data)
     # await query.answer(f"Выбрано значение {callback_data['urgency']}")
     # await query.message.delete_reply_markup()
 
@@ -134,30 +174,7 @@ async def get_score_importance(query: types.CallbackQuery, callback_data, state:
     # logging.info(callback_data['val'])
     # logging.info(data['score_urgency'])
     await state.finish()
-    try:
-        ddate = datetime.strftime(datetime.strptime(data['timestamp'][0:16], '%Y-%m-%d %H:%M'), '%d.%m.%Y %H:%M')
-    except:
-        ddate = data['timestamp']
-    ans = f"Новый заказ от <b>{data['user_from']}:\n</b>" \
-          + "Проект: <b>" + data['project_name'] + "</b>\n" \
-          + "Клиент: <b>" + data['main_client'] + "</b>\n" \
-          + "Дедлайн: <b>" + data['deadline_date'] + "</b>\n" \
-          + "Описание: \n<i>" + data['short_task_description'] + "</i>\n" \
-          + "Важность: <b>" + data['score_importance'] + "</b>\n" \
-          + "Создано: <b>" + ddate + "</b>\n"
-    # logging.info(ans)
-    # await bot.send_message(message.chat.id, ans) #for test
-    await query.bot.send_message('-1001613271219', ans, parse_mode='HTML')
-
-    try:
-        # insert info into sheet
-        if rec_to_sheets(data):
-            await bot.send_message(query.message.chat.id, "Спасибо, ваш запрос отправлен в дизайн-лабораторию! "
-                                                          "С вами скоро свяжутся)", parse_mode='HTML')
-
-    except Exception as e:
-        await bot.send_message(query.message.chat.id, "Произошел какой-то сбой. Данные, к сожалению, не записались :(")
-        await bot.send_message('287994530', str(e) + '\nДанные для записи:\n' + str(data))
+    await recs(query, data)
 
 
 # register handlers
