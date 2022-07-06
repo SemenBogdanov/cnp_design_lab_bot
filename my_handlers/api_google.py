@@ -68,6 +68,7 @@ async def create_new_bitrix_task(title: str, description: str, deadline, respons
                           'RESPONSIBLE_ID': response_employer_id,
                           'CREATED_BY': creator}
                       })
+        await bx24.call('task.stages.movetask',{'id':result_of_call['task']['id'],'stageId':'8750'})
         # print(f"Переменная res: {result_of_call['task']['id']}")
         return result_of_call
 
