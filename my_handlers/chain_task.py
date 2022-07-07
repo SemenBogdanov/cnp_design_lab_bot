@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from datetime import timedelta
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.types import ReplyKeyboardRemove
@@ -156,7 +157,7 @@ async def get_score_importance(query: types.CallbackQuery, callback_data, state:
     async with state.proxy() as data:
         data['score_urgency'] = '--исключено--'
         # data['score_importance'] = callback_data['imp']
-        data['timestamp'] = str(datetime.now())
+        data['timestamp'] = str(datetime.now()+timedelta(hours=3))
         data['task_status'] = 'New!'
     # print(data)
     # await query.answer(f"Выбрано значение {callback_data['urgency']}")
