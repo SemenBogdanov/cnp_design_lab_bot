@@ -55,8 +55,8 @@ def check_user(u_id: str):
     return name_from_sheet
 
 
-async def create_new_bitrix_task(title: str, description: str, deadline, response_employer_id: int = 16, group_id: int = 377,
-                           auditors=['218'], creator: int = '2300'):
+async def create_new_bitrix_task(title: str, description: str, deadline, response_employer_id: int = 425, group_id: int = 377,
+                           auditors=['218','425'], creator: int = '2300'):
         logging.disable(10)
         result_of_call = await bx24.call('tasks.task.add',
                       {'fields': {
