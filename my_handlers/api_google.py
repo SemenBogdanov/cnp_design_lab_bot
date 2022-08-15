@@ -6,10 +6,10 @@ from pprint import *
 from fast_bitrix24 import *
 
 # from create_bot import dp
-from key import bitrix_key
+from key import bitrix_key_rus
 
 
-wh = f"https://pm.ac.gov.ru/rest/2300/{bitrix_key}/"
+wh = f"https://pm.ac.gov.ru/rest/16/{bitrix_key_rus}/"
 bx24 = Bitrix(wh)
 
 
