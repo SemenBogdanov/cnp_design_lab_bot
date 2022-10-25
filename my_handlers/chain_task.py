@@ -21,7 +21,10 @@ async def help_df(message: types.Message):
 
 
 async def start_new_task(message: types.Message, state: FSMContext):
+    q = await bot.send_message(message.chat.id, 'Проверка пользователя... Подождите...')
+    print(q)
     u_name = check_user(str(message.from_user.id))
+    await bot.delete_message(q.chat.id, q.message_id)
     # print(f'U_name is {u_name}')
 
     if len(u_name):
@@ -59,10 +62,19 @@ async def cancel_new_task(message: types.Message, state: FSMContext):
 
 async def get_project_name(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['project_name'] = message.text
-    await Projects.next()
-    await bot.send_message(message.chat.id, "Для кого реализуем? (т.е кто является главным клиентом проекта/задачи, "
-                                            "например, Мишустин М.В.)", parse_mode='HTML')
+        if message.text == '/new_task':
+            await bot.send_message(message.chat.id, "Неверный ввод. Начнем заново!")
+            await start_new_task(message, state)
+        else:
+            data['project_name'] = message.text
+            await Projects.next()  # next state: main_client
+            await bot.send_message(message.chat.id,
+                                   "Для кого реализуем? (т.е кто является главным клиентом проекта/задачи, "
+                                   "например, Мишустин М.В.)", parse_mode='HTML')
+
+
+
+
 
 
 # async def get_main_account(message: types.Message, state: FSMContext):

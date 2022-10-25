@@ -9,6 +9,7 @@ from my_handlers.api_google import check_user, add_user_info
 
 
 async def cmd_start(message: types.Message):
+    await bot.send_message(message.chat.id, 'Подождите. Проверяю пользователя...')
     u_name = check_user(message.from_user.id)
     print(f'u_id is {message.from_user.id}')
     print(f'u_name is {u_name}')
