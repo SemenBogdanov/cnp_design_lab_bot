@@ -22,7 +22,7 @@ async def help_df(message: types.Message):
 
 async def start_new_task(message: types.Message, state: FSMContext):
     q = await bot.send_message(message.chat.id, 'Проверка пользователя... Подождите...')
-    print(q)
+    # print(q)
     u_name = check_user(str(message.from_user.id))
     await bot.delete_message(q.chat.id, q.message_id)
     # print(f'U_name is {u_name}')
