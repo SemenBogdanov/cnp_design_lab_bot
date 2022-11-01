@@ -6,10 +6,10 @@ from pprint import *
 from fast_bitrix24 import *
 
 # from create_bot import dp
-from key import bitrix_key_rus
+from key import bitrix_key_den
 
 
-wh = f"https://pm.ac.gov.ru/rest/16/{bitrix_key_rus}/"
+wh = f"https://pm.ac.gov.ru/rest/321/{bitrix_key_den}/"
 bx24 = Bitrix(wh)
 
 
@@ -56,7 +56,7 @@ def check_user(u_id: str):
 
 
 async def create_new_bitrix_task(title: str, description: str, deadline, response_employer_id: int = 425, group_id: int = 377,
-                           auditors=['2300'], creator: int = '16'):
+                           auditors=['2300'], creator: int = '321'):
         logging.disable(10)
         result_of_call = await bx24.call('tasks.task.add',
                       {'fields': {

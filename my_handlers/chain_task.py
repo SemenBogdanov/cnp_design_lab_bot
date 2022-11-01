@@ -138,7 +138,7 @@ async def recs(query: types.CallbackQuery, data):
             await query.bot.send_message('-1001613271219', ans, parse_mode='HTML')
 
         bitrix_task_was_created = await create_new_bitrix_task(data['project_name'],
-                                                               ans, data['deadline_date'], 16, 377)
+                                                               ans, data['deadline_date'], 321, 377)
         # print(bitrix_task_was_created['task']['id'])
         if bitrix_task_was_created:
             await query.bot.send_message('-1001613271219',
