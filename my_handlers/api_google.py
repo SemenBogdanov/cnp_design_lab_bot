@@ -9,7 +9,7 @@ from fast_bitrix24 import *
 from key import bitrix_key_lex
 
 
-wh = f"https://pm.ac.gov.ru/rest/321/{bitrix_key_lex}/"
+wh = f"https://pm.ac.gov.ru/rest/425/{bitrix_key_lex}/"
 bx24 = Bitrix(wh)
 
 
@@ -56,7 +56,7 @@ def check_user(u_id: str):
 
 
 async def create_new_bitrix_task(title: str, description: str, deadline, response_employer_id: int = 425, group_id: int = 377,
-                           auditors=['2300'], creator: int = '321'):
+                           auditors=['2300'], creator: int = '425'):
         logging.disable(10)
         result_of_call = await bx24.call('tasks.task.add',
                       {'fields': {
