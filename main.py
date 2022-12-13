@@ -1,9 +1,8 @@
 import asyncio
 import logging
+import my_handlers
 
 from aiogram.utils import executor
-
-import my_handlers
 from create_bot import dp
 
 
