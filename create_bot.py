@@ -31,7 +31,7 @@ class Projects(StatesGroup):
     short_task_description = State()
     deadline = State()
     # deadline_time = State()
-    score_importance = State()
+    # score_importance = State()
     # score_urgency = State()
     timestamp = State()
 
