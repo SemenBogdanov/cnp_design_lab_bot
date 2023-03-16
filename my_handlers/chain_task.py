@@ -110,8 +110,9 @@ async def recs(data, message: types.Message):
           + "Клиент: <b>" + data['main_client'] + "</b>\n" \
           + "Дедлайн: <b>" + data['deadline_date'] + "</b>\n" \
           + "Описание: \n<i>" + data['short_task_description'] + "</i>\n" \
-          + "Важность: <b>" + data['score_importance'] + "</b>\n" \
           + "Создано: <b>" + ddate + "</b>\n"
+
+    # + "Важность: <b>" + data['score_importance'] + "</b>\n" \
 
     # logging.info(ans)
     # await bot.send_message(message.chat.id, ans) #for test
