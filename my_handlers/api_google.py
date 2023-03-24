@@ -8,7 +8,6 @@ from fast_bitrix24 import *
 # from create_bot import dp
 from key import bitrix_key_lex
 
-
 wh = f"https://pm.ac.gov.ru/rest/425/{bitrix_key_lex}/"
 bx24 = Bitrix(wh)
 
@@ -55,25 +54,22 @@ def check_user(u_id: str):
     return name_from_sheet
 
 
-async def create_new_bitrix_task(title: str, description: str, deadline, response_employer_id: int = 425, group_id: int = 377,
-                           auditors=['2300'], creator: int = '425'):
-        logging.disable(10)
-        result_of_call = await bx24.call('tasks.task.add',
-                      {'fields': {
-                          'TITLE': title,
-                          'DESCRIPTION': description,
-                          'GROUP_ID': group_id,
-                          'AUDITORS': auditors,
-                          'DEADLINE': deadline,
-                          'RESPONSIBLE_ID': response_employer_id,
-                          'CREATED_BY': creator}
-                      })
-        # await bx24.call('task.stages.movetask',{'id':result_of_call['task']['id'],'stageId':'8750'})
-        # print(f"Переменная res: {result_of_call['task']['id']}")
-        return result_of_call
+async def create_new_bitrix_task(title: str, description: str, deadline, response_employer_id: int = 425,
+                                 group_id: int = 377, creator: int = '425'):
+    logging.disable(10)
+    result_of_call = await bx24.call('tasks.task.add',
+                                     {'fields': {
+                                         'TITLE': title,
+                                         'DESCRIPTION': description,
+                                         'GROUP_ID': group_id,
+                                         'DEADLINE': deadline,
+                                         'RESPONSIBLE_ID': response_employer_id,
+                                         'CREATED_BY': creator}
+                                     })
+    # await bx24.call('task.stages.movetask',{'id':result_of_call['task']['id'],'stageId':'8750'})
+    # print(f"Переменная res: {result_of_call['task']['id']}")
+    return result_of_call
 
-
-        # return result_of_call['task']['id']
-        # logging.INFO(res['task']['id'])
-
+    # return result_of_call['task']['id']
+    # logging.INFO(res['task']['id'])
 
