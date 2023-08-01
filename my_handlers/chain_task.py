@@ -31,13 +31,21 @@ async def start_new_task(message: types.Message, state: FSMContext):
         await Projects.project_name.set()
         async with state.proxy() as data:
             data['user_from'] = u_name
+        await bot.send_message(message.chat.id, 'Коллеги! Этот бот больше НЕ ПРИНИМАЕТ ЗАЯВКИ в Дизайн лабораторию. '
+                                                'Приглашаем вас в новую приемную для задач '
+                                                'https://t.me/kc_designer_bot\n'
+                                                'По всем вопросам просим обращаться @GTAlexey')
         await bot.send_message(message.chat.id, '<b>Новая задача!</b>\n\n'
                                                 f'Укажите название вашего проекта/инцидента (важно использовать '
                                                 f'название как в Timesheets, например «Демография 2.0», '
                                                 f'«Кураторство ПФО», если задача без проекта - укажите '
                                                 f'«Презентации, макеты, сайты»).', parse_mode='HTML')
     else:
-        await bot.send_message(message.chat.id, 'Вижу мы еще не знакомы, предлагаю это исправить!')
+        await bot.send_message(message.chat.id, 'Вижу мы еще не знакомы, предлагаю это не исправлять '
+                                                'и зарегистрироваться в новом боте! Там будет отдельная регистрация...'
+                                                ''
+                                                'Этот бот больше НЕ ПРИНИМАЕТ ЗАЯВКИ, вот новый '
+                                                'https://t.me/kc_designer_bot')
         await cmd_start(message)
 
 
